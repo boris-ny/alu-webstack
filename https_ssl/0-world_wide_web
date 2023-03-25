@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Define a function that takes a string as an argument and returns the third word in the string, which is the record type
 function get_record_type {
-    local record_type=$(echo "$1" | awk '{print $3}')
+    local record_type=$(echo "$1" | awk '{print $4}')
     echo "$record_type"
 }
 # Define a function that takes a string as an argument and returns the fourth word in the string, which is the destination
 function get_destination {
-    local destination=$(echo "$1" | awk '{print $4}')
+    local destination=$(echo "$1" | awk '{print $5}')
     echo "$destination"
 }
 # Assign the first command-line argument to a variable called domain
@@ -23,7 +23,7 @@ fi
 # Loop over each element in the subdomains array
 for subdomain in "${subdomains[@]}"; do
      # Use the dig command to query the DNS record for the subdomain and domain combination and assign the output to a variable called record
-    record=$(dig +short "$subdomain.$domain")
+    record="$(dig "$subdomain.$domain" | grep -A1 "ANSWER SECTION:" |awk 'NR==2')"
      # Call the get_record_type function with the record variable as an argument and assign the output to a variable called record_type
     record_type=$(get_record_type "$record")
     # Call the get_destination function with the record variable as an argument and assign the output to a variable called destination
